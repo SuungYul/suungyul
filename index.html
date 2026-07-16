@@ -315,7 +315,7 @@
       <div class="stat reveal"><div class="num grad-text">290×</div><div class="lbl">쿼리 성능 개선<br>(92초→0.3초)</div></div>
       <div class="stat reveal"><div class="num grad-text">46초→0.02초</div><div class="lbl">분석 집계 최적화<br>(사전집계 롤업)</div></div>
       <div class="stat reveal"><div class="num grad-text">21×</div><div class="lbl">업로드 자동매핑<br>(150초→7초)</div></div>
-      <div class="stat reveal"><div class="num grad-text">약 8GB</div><div class="lbl">통합 분석 DB<br>(5개 소스)</div></div>
+      <div class="stat reveal"><div class="num grad-text">6.6×</div><div class="lbl">크롤러 처리속도<br>(86분→13분)</div></div>
       <div class="stat reveal"><div class="num grad-text">연 2천만↓</div><div class="lbl">직접 절감한 비용<br>(AWS·외주 대체)</div></div>
     </div>
   </div>
@@ -325,7 +325,7 @@
   <div class="wrap">
     <div class="sec-label">About</div>
     <h2 class="sec-title"><span class="grad-text">백엔드와 데이터</span>로 제품의 기반을 설계합니다</h2>
-    <p class="sec-sub">제약·헬스케어 B2B 제품의 DB·API·분석 플랫폼·배치를 중심으로, 인프라와 사용자 화면까지 직접 연결해 운영합니다.</p>
+    <p class="sec-sub">제약·헬스케어 B2B 제품의 DB·API·데이터 배치를 중심으로, 인프라와 사용자 화면까지 직접 연결해 운영합니다.</p>
     <div class="about-grid">
       <div class="about-card reveal">
         <p><span class="hl">"넘겨받은 코드를 다시 설계해 끌어올렸습니다."</span> 앱 개발 체험형 인턴으로 들어와 정규직으로 전환되면서, 제품 전반을 맡게 됐습니다.</p>
@@ -548,28 +548,8 @@ ANALYZE TABLE notification_history;   <span class="cm">-- 통계 갱신 → EXPL
 <section id="projects">
   <div class="wrap">
     <div class="sec-label">Projects</div>
-    <h2 class="sec-title"><span class="grad-text">데이터 플랫폼</span>부터 B2B 제품까지</h2>
-    <p class="sec-sub">데이터를 수집·정제·통합하는 기반부터 분석 엔진과 사용자 제품까지 직접 설계하고 운영했습니다.</p>
-
-    <!-- 데이터 플랫폼 -->
-    <article class="proj reveal">
-      <div class="proj-head">
-        <div class="proj-kicker">Data Platform · Pipeline</div>
-        <div class="proj-title">통합 분석 데이터 플랫폼</div>
-        <p class="proj-tagline">흩어진 운영·공공·마케팅 데이터를 하나의 조회 면으로 통합해 사람과 분석 에이전트가 안전하게 활용할 수 있는 데이터 기반을 구축했습니다.</p>
-        <div class="role-tags"><span>Data · Airflow</span><span>Database · MariaDB</span><span>Warehouse · Snowflake</span><span>Integration · API/SAP</span></div>
-      </div>
-      <div class="proj-body">
-        <h5>핵심 기여</h5>
-        <ul class="contrib">
-          <li>개발·운영 DB, 공공 병원 데이터, 마케팅 데이터, 의사정보 등 <b>5개 소스를 단일 분석 DB로 통합</b>했습니다. <span class="metric-pill">약 8GB · 5개 소스</span></li>
-          <li>각 시스템이 데이터를 밀어 넣는 구조가 아니라 <b>Airflow 배치가 소스를 pull</b>해 적재하도록 설계하고, 소스별 실패를 격리해 전체 파이프라인의 생존성을 확보했습니다.</li>
-          <li>Snowflake·SAP·외부 API 데이터를 동일한 조회 흐름으로 연결하고, ETL·증분적재와 분석용 뷰·카탈로그를 구성해 비개발자와 LLM 기반 분석에서도 안전하게 질의할 수 있도록 했습니다.</li>
-          <li><b>행정구역 개편 대응 GIS 리매핑.</b> 행안부 최신 지역코드와 국토부 좌표 데이터 간 갱신 시차로 발생한 불일치를 발견하고, 기존 좌표를 기준으로 개편 행정구역에 재매핑해 미갱신 데이터를 보정했습니다.</li>
-        </ul>
-        <div class="tech-row"><span class="t">Airflow</span><span class="t">MariaDB</span><span class="t">Snowflake</span><span class="t">ETL·증분적재</span><span class="t">SAP</span><span class="t">External API</span><span class="t">GIS Remapping</span></div>
-      </div>
-    </article>
+    <h2 class="sec-title"><span class="grad-text">백엔드·데이터</span>로 만든 B2B 제품</h2>
+    <p class="sec-sub">두 개의 플래그십 제품에서 DB·API·분석 기능·데이터 배치와 운영 안정성을 직접 책임졌습니다.</p>
 
     <!-- 꾹 -->
     <article class="proj reveal">
@@ -585,12 +565,13 @@ ANALYZE TABLE notification_history;   <span class="cm">-- 통계 갱신 → EXPL
           <li><b>인수한 서버를 재설계.</b> 4개 파일에 로직·SQL이 뒤섞여 있던 FastAPI 서버를 routers·services·repositories·models <b>4계층으로 재구성</b>했습니다. 잘못된 <code>async</code>로 최대 6분 걸리던 API 병목도 제거 <span class="metric-pill">6분 → 0.2초 (p95·운영 반영)</span></li>
           <li>대량 조회 API 30초 타임아웃(500) → <span class="metric-pill">0.1초 (운영 반영)</span> — 매 row마다 도는 DEPENDENT SUBQUERY를 CTE로 축약 + 복합 인덱스 추가(EXPLAIN으로 검증).</li>
           <li>병원 상세 화면을 BE·FE 동시 구현 — 지역 비교 매출 percentile을 단일 CTE(BNL 조인) → 4단계 분리로 <span class="metric-pill">92초 → 0.3초 (290×, 약 8만 병원·운영 반영)</span>, 개원/개원예정 분기 UI·AI 브리핑·툴팁.</li>
+          <li><b>행정구역 개편 대응 데이터 정합성 개선.</b> 행안부 최신 지역코드와 국토부 좌표 데이터 간 갱신 시차로 발생한 불일치를 기존 좌표 기준으로 개편 행정구역에 재매핑해 보정했습니다.</li>
           <li>심평원 데이터 이상으로 발생한 <b>알림 1,000건 폭주</b>를 1병원 1알림 설계 + 임계치 기반 프로시저로 차단.</li>
           <li>다중 워커 환경 appdata 캐시 stale을 <b>파일 mtime 세대 신호</b>로 해결(외부 의존성 없이), Mixpanel 이벤트 24종 택소노미 설계.</li>
           <li>WAF 탐지로그 <span class="metric-pill">5,045건</span> 분석 → 공격/오탐 분류 + 차단정책 권고, iOS Universal Link 미동작 원인(Apple CDN) 규명.</li>
           <li>Flutter 앱 A-to-Z 개발·배포·운영 — GetX 상태관리, 딥링크/웹뷰/한글 조합 입력 버그, Crashlytics 관제, MDM 정책 배포.</li>
         </ul>
-        <div class="tech-row"><span class="t">FastAPI</span><span class="t">Flutter/Dart</span><span class="t">React</span><span class="t">MariaDB</span><span class="t">Airflow</span><span class="t">Mixpanel</span><span class="t">Firebase</span><span class="t">AWS</span></div>
+        <div class="tech-row"><span class="t">FastAPI</span><span class="t">MariaDB</span><span class="t">Airflow</span><span class="t">GIS Remapping</span><span class="t">Flutter/Dart</span><span class="t">React</span><span class="t">Mixpanel</span><span class="t">Firebase</span><span class="t">AWS</span></div>
       </div>
     </article>
 
