@@ -183,6 +183,11 @@
   .feature-card h4{font-size:17px;color:var(--heading);font-weight:800;margin:6px 0 9px}
   .feature-card p{font-size:13.8px;color:var(--text);line-height:1.6}
   .feature-card p b{color:var(--heading)}
+  .decision-case{margin:2px 0 24px;padding:20px;background:#F8FAF9;border:1px solid var(--border);border-radius:var(--radius-sm)}
+  .decision-case h5{margin-bottom:14px;color:var(--heading)}
+  .decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .decision-step{padding:14px;background:#fff;border:1px solid #E4ECE7;border-radius:10px;font-size:13.5px;line-height:1.55;color:var(--text)}
+  .decision-step b{display:block;margin-bottom:4px;color:var(--accent);font-size:12px;letter-spacing:.03em}
 
   /* SATELLITE (꾹 연계) */
   .sat-wrap{margin:18px 0 0;padding:22px 24px;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;background:linear-gradient(180deg,#F6FBF8,#fff)}
@@ -267,7 +272,7 @@
     .eproj-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media(max-width:560px){
-    .impact,.flow-steps,.eng-grid,.skill-grid,.feature-grid,.eproj-grid,.sat-grid{grid-template-columns:1fr}
+    .impact,.flow-steps,.eng-grid,.skill-grid,.feature-grid,.decision-grid,.eproj-grid,.sat-grid{grid-template-columns:1fr}
     .nav-links{display:none}
     section{padding:64px 0}
     header.hero{padding:64px 0 52px}
@@ -301,7 +306,7 @@
     <h1 class="name">박성열<span class="en grad-text">Backend × Data, end to end.</span></h1>
     <p class="lead">
       제품 하나의 <b>DB·API·데이터 파이프라인·인프라</b>를 직접 설계하고 운영하는 백엔드·데이터 엔지니어입니다.
-      데이터가 들어오는 지점부터 제품에 전달되는 화면까지 책임지고, 프론트·모바일 경험으로 <b>end-to-end 실행력</b>을 더합니다.
+      문제를 정의하고 대안을 비교한 뒤, 데이터가 들어오는 지점부터 제품에 전달되는 화면까지 책임지며 <b>결과와 트레이드오프를 운영 데이터로 검증</b>합니다.
     </p>
     <div class="scope-tags">
       <span>🛠️ 데이터 엔지니어링</span><span>⚙️ 백엔드</span><span>📊 데이터 분석</span><span>☁️ 인프라 / DevOps</span><span>🧩 웹·모바일</span>
@@ -596,12 +601,21 @@ ANALYZE TABLE notification_history;   <span class="cm">-- 통계 갱신 → EXPL
             <p>매출 개념이 없는 신규 도메인을 <b>단일 도메인 플래그</b>로 지표·용어·변수·성과 전 구간에서 매출 대신 검사건수를 사용하도록 전환했습니다. 약 <b>1,300만 행 복제 파이프라인</b>과 운영 온보딩까지 구성해 코드 분기만으로 이종 도메인을 수용하도록 제품 확장성을 설계했습니다.</p>
           </div>
         </div>
+        <div class="decision-case">
+          <h5>대표 의사결정 · 사용자 업로드 자동매핑</h5>
+          <div class="decision-grid">
+            <div class="decision-step"><b>01 · 문제 정의</b>병원 자동매핑이 150초까지 걸려 60초 게이트웨이 제한을 넘었고, 사용자는 정상 처리 중인 작업도 실패로 인식했습니다.</div>
+            <div class="decision-step"><b>02 · 의사결정</b>타임아웃만 늘리지 않고 ID 인덱스·지역 선분할로 매칭 비용을 먼저 줄인 뒤, NDJSON 스트리밍으로 실제 진행률을 전달했습니다.</div>
+            <div class="decision-step"><b>03 · 결과</b>자동매핑을 <span class="metric-pill">150초 → 7초 (21×)</span>로 단축하고, 더 긴 작업도 진행 상태를 확인하며 완료할 수 있게 했습니다.</div>
+            <div class="decision-step"><b>04 · 트레이드오프</b>프론트 스트림 파싱과 미들웨어 처리가 복잡해지는 대신, 스트리밍 응답에만 압축을 우회하고 기존 동기 API를 fallback으로 유지했습니다.</div>
+          </div>
+        </div>
         <h5>핵심 기여</h5>
         <ul class="contrib">
           <li><b>Snowflake → MariaDB 전면 이관</b> — DB 추상화 계층 덕에 라우터·서비스 수정 없이, 29테이블 + 11뷰 + 심평원 9테이블 <span class="metric-pill">47개 파일 repoint</span>, SQL 방언 변환, 콜레이션 함정 수정.</li>
           <li>필터 조건을 SQL로 번역하는 <code>filter_sql</code> 엔진 — must/any/not 버킷을 AND/OR/AND NOT로, 식별자 화이트리스트로 주입 방어. 핵심 뷰 실체화(CTAS+인덱스)로 타겟 COUNT <span class="metric-pill">60초+ → 0.2초 (8만+ 병원 뷰)</span></li>
           <li><b>성과분석 재정의.</b> 캠페인 제품과 타겟병원의 교집합으로 성과를 매핑하고 기간집계·병원목록까지 연결해 캠페인 효과를 일관된 기준으로 조회하도록 구현했습니다.</li>
-          <li>사용자 데이터 업로드·병원 매핑 전체 구현: <b>16개 엔드포인트</b>, 5단계 마법사, 이름·주소 유사도 매칭. 자동매핑을 <span class="metric-pill">150초 → 7초 (21×)</span>로 개선하고 NDJSON 스트리밍 진행률로 게이트웨이 타임아웃을 해소했으며 <b>PII 스캔·차단</b>을 적용했습니다.</li>
+          <li>사용자 데이터 업로드·병원 매핑 전체 구현: <b>16개 엔드포인트</b>, 5단계 마법사, 이름·주소 유사도 매칭과 <b>PII 스캔·차단</b> 적용.</li>
           <li>타겟 추출 엔진과 UX: 변수 카탈로그, 값 검색 미리보기(디바운스 + 무한 스크롤), 필수/선호/제외 조건, 등급별(RBAC) 데이터 가시성.</li>
           <li>EC2 x86 → <b>ARM 무중단 이관</b>(ENI/IP swap, CI 러너 재등록) <span class="metric-pill">연 ~71% 비용 절감</span>, 자동 로그아웃 + 비밀번호 재발급(SMTP 디버깅).</li>
         </ul>
@@ -696,7 +710,7 @@ ANALYZE TABLE notification_history;   <span class="cm">-- 통계 갱신 → EXPL
       <div>
         <div class="sec-label">Education &amp; Career</div>
         <ul class="timeline" style="margin-top:18px">
-          <li class="reveal"><span class="yr">2025 – 현재</span><b>GC (녹십자홀딩스) · 데이터서비스팀</b><span>백엔드·데이터 엔지니어 — B2B 제품의 DB·API·파이프라인·인프라 설계 및 운영</span></li>
+          <li class="reveal"><span class="yr">2025 – 현재</span><b>GC (녹십자홀딩스) · 커머셜솔루션팀</b><span>백엔드·데이터 엔지니어 — B2B 제품의 DB·API·파이프라인·인프라 설계 및 운영</span></li>
           <li class="reveal"><span class="yr">2024.10 – 2024.12</span><b>KB국민은행 · 데이터랩스 (파견)</b><span>사내벤처 AI 서비스 '파피루스' 개발</span></li>
           <li class="reveal"><span class="yr">2019.03 – 2024.08</span><b>명지대학교 컴퓨터공학과 (조기졸업)</b><span>학점 4.21 / 4.5</span></li>
           <li class="reveal"><span class="yr">2020.08 – 2022.02</span><b>육군 제2군단 102정보통신단 만기전역</b><span>정보보호병</span></li>
