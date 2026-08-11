@@ -5,6 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>박성열 · Backend × Data Engineer — Portfolio</title>
 <meta name="description" content="박성열 — 제품의 DB·API·데이터 파이프라인·인프라를 직접 설계하고 운영하는 백엔드·데이터 엔지니어 포트폴리오." />
+<script>
+  const portfolioAnalyticsParams = new URLSearchParams(window.location.search);
+  if (portfolioAnalyticsParams.get('analytics') === 'off') localStorage.setItem('portfolio_analytics_opt_out', '1');
+  if (portfolioAnalyticsParams.get('analytics') === 'on') localStorage.removeItem('portfolio_analytics_opt_out');
+
+  const portfolioAnalyticsEnabled = !['localhost', '127.0.0.1'].includes(window.location.hostname)
+    && localStorage.getItem('portfolio_analytics_opt_out') !== '1';
+  window.portfolioAnalyticsEnabled = portfolioAnalyticsEnabled;
+
+  if (portfolioAnalyticsEnabled) {
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+
+    posthog.init('phc_vU5yzMyibhpYcCFyC4TyiWRjwCZZCGBTotZrJQ9MDC5d', {
+      api_host: 'https://us.i.posthog.com',
+      defaults: '2026-05-30',
+      person_profiles: 'identified_only',
+      persistence: 'localStorage',
+      autocapture: false,
+      capture_pageview: true,
+      capture_pageleave: true,
+      capture_dead_clicks: false,
+      capture_exceptions: false,
+      capture_heatmaps: false,
+      capture_performance: false,
+      disable_session_recording: true,
+      disable_surveys: true,
+      rageclick: false,
+      respect_dnt: true
+    });
+  }
+</script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 <style>
@@ -738,7 +769,7 @@ ANALYZE TABLE notification_history;   <span class="cm">-- 통계 갱신 → EXPL
       <a href="mailto:pmtf00@gmail.com">✉️ pmtf00@gmail.com</a>
       <a href="https://github.com/SuungYul" target="_blank" rel="noopener">🐙 github.com/SuungYul</a>
     </div>
-    <div class="foot-bottom"><span>© 2026 박성열 (Sungyul Park) · Backend · Data Engineer</span><span>Backend × Data, end to end.</span></div>
+    <div class="foot-bottom"><span>© 2026 박성열 (Sungyul Park) · Backend · Data Engineer</span><span>익명 방문 통계만 수집 · 세션 재생 없음</span></div>
   </div>
 </footer>
 
@@ -775,6 +806,67 @@ ANALYZE TABLE notification_history;   <span class="cm">-- 통계 갱신 → EXPL
   for (const id of ['about','skills','workflow','engineering','projects','impact-biz','ops','earlier','contact']) {
     const element = document.getElementById(id);
     if (element) sectionObserver.observe(element);
+  }
+
+  // 관심도를 판단하는 데 필요한 최소 행동만 익명 이벤트로 기록합니다.
+  if (window.portfolioAnalyticsEnabled && window.posthog) {
+    const capturedSections = new Set();
+    const analyticsSectionObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting || capturedSections.has(entry.target.id)) continue;
+        capturedSections.add(entry.target.id);
+        posthog.capture('portfolio_section_viewed', {section: entry.target.id});
+        analyticsSectionObserver.unobserve(entry.target);
+      }
+    }, {threshold:.35});
+
+    for (const section of document.querySelectorAll('header[id], section[id], footer[id]')) {
+      analyticsSectionObserver.observe(section);
+    }
+
+    const capturedDepths = new Set();
+    const captureScrollDepth = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) return;
+      const depth = Math.round((window.scrollY / scrollable) * 100);
+      for (const threshold of [25, 50, 75, 90]) {
+        if (depth < threshold || capturedDepths.has(threshold)) continue;
+        capturedDepths.add(threshold);
+        posthog.capture('portfolio_scroll_depth_reached', {depth_percent: threshold});
+      }
+    };
+    window.addEventListener('scroll', captureScrollDepth, {passive:true});
+
+    let activeSeconds = 0;
+    const capturedActiveTimes = new Set();
+    window.setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      activeSeconds += 1;
+      for (const threshold of [30, 60, 120]) {
+        if (activeSeconds < threshold || capturedActiveTimes.has(threshold)) continue;
+        capturedActiveTimes.add(threshold);
+        posthog.capture('portfolio_active_time_reached', {active_seconds: threshold});
+      }
+    }, 1000);
+
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a');
+      if (!link) return;
+
+      const href = link.getAttribute('href') || '';
+      const linkType = href.startsWith('mailto:')
+        ? 'email'
+        : href.includes('github.com')
+          ? 'github'
+          : href.startsWith('#')
+            ? 'internal_navigation'
+            : 'outbound';
+
+      posthog.capture('portfolio_link_clicked', {
+        link_type: linkType,
+        destination: href.startsWith('#') ? href.slice(1) : linkType
+      });
+    });
   }
 </script>
 </body>
